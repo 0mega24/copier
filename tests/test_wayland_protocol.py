@@ -69,7 +69,12 @@ class FakeCompositor:
             buffered, fds = bytearray(), []
             next_server_id = 0xff000000
             while True:
-                data, anc, _, _ = self.conn.recvmsg(65536, socket.CMSG_SPACE(256))
+                try:
+                    data, anc, _, _ = self.conn.recvmsg(65536, socket.CMSG_SPACE(256))
+                except ConnectionResetError:
+                    # A capture-only client can close with queued protocol events.
+                    # Its caller still verifies exit status and captured contents.
+                    return
                 if not data:
                     return
                 buffered.extend(data)
