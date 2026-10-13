@@ -1,0 +1,4 @@
+/copier
+/dist/
+*.test
+__pycache__/
